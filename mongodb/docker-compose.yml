@@ -1,0 +1,23 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: strongpassword
+
+    volumes:
+      - mongo_db_volume:/data/db
+
+volumes:
+  mongo_db_volume:
+    driver_opts:
+      type: none
+      device: ${PWD}/volumes
+      o: bind
