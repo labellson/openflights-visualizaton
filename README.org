@@ -1,0 +1,8 @@
+#+TITLE: Open flights visualizer
+#+AUTHOR: Daniel Laguna Soto
+#+EMAIL: dani@dani.codes
+
+This is the very beginning of a visualizer for the OpenFlights data [fn:1]
+
+* Footnotes
+[fn:1] [[https://openflights.org/data.html][Openfligths webpage]] 
