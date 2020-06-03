@@ -109,7 +109,7 @@ def load_locations(path_to_data):
     return df
 
 
-def load_routes(path_to_data):
+def load_routes(path_to_data, flights=True):
     route_dtypes = dict(
         source_id=int,
         destination_id=int,
@@ -120,10 +120,18 @@ def load_routes(path_to_data):
     df.drop(df[df['source_id'] == '\\N'].index, inplace=True)
     df.drop(df[df['destination_id'] == '\\N'].index, inplace=True)
 
-    return df.astype(int)
+    df = df.astype(int)
+
+    if flights:
+        df = df.groupby(['source_id', 'destination_id']).size().reset_index()
+        columns = list(df.columns)
+        columns[-1] = 'flights'
+        df.columns = columns
+
+    return df
 
 
-def load_routes_join(path_to_data, loc_df):
+def load_routes_join(path_to_data, loc_df, flights=True):
     r_df = load_routes(path_to_data)
     _loc_df = loc_df.set_index('airport_id')
 
