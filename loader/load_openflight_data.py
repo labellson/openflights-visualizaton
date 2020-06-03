@@ -92,3 +92,47 @@ def load_openflight_data(location_data, route_data, airline_data=None):
             kwargs['destination'] = loc_dict[destination_id]
 
         AirRoute(**kwargs).save()
+
+
+def load_locations(path_to_data):
+    location_dtypes = OrderedDict(
+        airport_id=int,
+        name=str,
+        latitude=float,
+        longitude=float,
+        type=str,
+    )
+    df = pd.read_csv(path_to_data, names=list(location_dtypes.keys()),
+                     usecols=[0, 1, 6, 7, 12])
+
+    df[df['type'] == 'airport']
+    return df
+
+
+def load_routes(path_to_data):
+    route_dtypes = dict(
+        source_id=int,
+        destination_id=int,
+    )
+    df = pd.read_csv(path_to_data, names=list(route_dtypes.keys()),
+                     usecols=[3, 5])
+
+    df.drop(df[df['source_id'] == '\\N'].index, inplace=True)
+    df.drop(df[df['destination_id'] == '\\N'].index, inplace=True)
+
+    return df.astype(int)
+
+
+def load_routes_join(path_to_data, loc_df):
+    r_df = load_routes(path_to_data)
+    _loc_df = loc_df.set_index('airport_id')
+
+    # Join the source
+    r_df.set_index('source_id', inplace=True)
+    r_df = r_df.join(_loc_df)
+
+    # Join the destination
+    r_df.reset_index(inplace=True, drop=True)
+    r_df = r_df.join(_loc_df, rsuffix='_destination')
+
+    return r_df.dropna()
